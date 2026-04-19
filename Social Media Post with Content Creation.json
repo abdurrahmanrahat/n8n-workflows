@@ -1,0 +1,829 @@
+{
+  "name": "Social Media Post with Content Creation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        0
+      ],
+      "id": "eec6b8a4-c31f-45ab-a597-3b84cf7dc049",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw",
+          "mode": "list",
+          "cachedResultName": "Social Media Post with Content Creation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "contents",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "is_posted?"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "49c8619d-183d-4fbd-8602-1313a3a8795b",
+      "name": "Get Content",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6fuzpxUTuqm9G0Nq",
+          "name": "Google OAuth2 API: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"LinkedIn\": \"...\",\n  \"Facebook\": \"...\",\n  \"Instagram\": \"...\",\n  \"TikTok\": \"...\",\n  \"Pinterest\": \"...\",\n  \"ImagePrompt\": \"...\",\n  \"ImageHeadline\": \"...\",\n  \"VideoScript\": {\n    \"Hook\": \"...\",\n    \"Scenes\": [\n      {\n        \"scene\": 1,\n        \"visual\": \"...\",\n        \"voiceover\": \"...\",\n        \"text\": \"...\"\n      }\n    ],\n    \"CTA\": \"...\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        208
+      ],
+      "id": "cfe860a2-22bb-4ab9-942e-2c08ec340141",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "43e488e2-cdbd-48b7-a01b-dc08344c176e",
+              "name": "linkedin_caption",
+              "value": "={{ $json.output.LinkedIn }}",
+              "type": "string"
+            },
+            {
+              "id": "11245ccd-eafb-4f71-a2be-f4660d09b22b",
+              "name": "facebook_caption",
+              "value": "={{ $json.output.Facebook }}",
+              "type": "string"
+            },
+            {
+              "id": "6d45ef1c-4f28-44ec-a481-e2a2d16435bb",
+              "name": "instagram_caption",
+              "value": "={{ $json.output.Instagram }}",
+              "type": "string"
+            },
+            {
+              "id": "857ea821-3a04-45f6-87bc-8508a1d52a02",
+              "name": "tiktok_caption",
+              "value": "={{ $json.output.TikTok }}",
+              "type": "string"
+            },
+            {
+              "id": "43c91709-b10b-4435-979b-653217f74d7c",
+              "name": "pinterest_caption",
+              "value": "={{ $json.output.Pinterest }}",
+              "type": "string"
+            },
+            {
+              "id": "e25515e8-d480-4cdc-90f2-ce2c04be89d8",
+              "name": "image_headline",
+              "value": "={{ $json.output.ImageHeadline }}",
+              "type": "string"
+            },
+            {
+              "id": "96b372a8-17a3-459d-9538-2993bfb18ef9",
+              "name": "image_prompt",
+              "value": "={{ $json.output.ImagePrompt }}",
+              "type": "string"
+            },
+            {
+              "id": "3bb00127-fe0a-4e2a-a688-5f7b202cc068",
+              "name": "video_script",
+              "value": "={{ $json.output.VideoScript }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        0
+      ],
+      "id": "14d210e9-a4b2-472f-b966-4d2a61a3744a",
+      "name": "Prepare AI Assets"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert social media content strategist, direct-response copywriter, and automation agency marketer.\n\nYour goal is NOT just to create content — your goal is to ATTRACT CLIENTS and generate inbound leads for automation and website services.\n\n---\n\nWrite high-converting content for the topic:\n\"{{ $json.Title }}\"\n\nOptional context:\n\"{{ $json.Description }}\"\n\n---\n\n### 🔹 TARGET AUDIENCE\n\n- Business owners\n- Founders\n- Coaches\n- Agencies\n- People with websites but no automation\n\n---\n\n### 🔹 OBJECTIVE\n\nEach post should:\n- Highlight a PROBLEM they already have\n- Create curiosity or urgency\n- Position automation as the SOLUTION\n- Subtly position ME as the expert\n- Encourage DM / inquiry / conversation\n\n---\n\n### 🔹 CONTENT STYLE\n\n- Simple, clear, no jargon\n- Slightly bold / opinionated\n- Focus on RESULTS (leads, time saved, money)\n- Avoid generic advice\n- Use real-world scenarios\n\n---\n\n### 🔹 PLATFORM RULES (IMAGE POSTS)\n\n#### LinkedIn (ideal 150–400 chars, max 800)\n- Strong hook (problem-based)\n- Break lines for readability\n- Call out a mistake or gap\n- Show simple solution (automation)\n- End with CTA (DM me / comment / ask question)\n- 3–5 hashtags\n\n---\n\n#### Facebook (80–250 chars)\n- Relatable problem\n- Conversational tone\n- Quick value\n- Early CTA\n- 3–5 hashtags\n\n---\n\n#### Instagram Caption (100–200 chars)\n- Hook in first line\n- Light emojis\n- Short lines\n- CTA (comment / DM)\n- Up to 8 hashtags\n\n---\n\n#### TikTok Caption (50–100 chars)\n- Punchy hook\n- Curiosity or pain\n- CTA like “watch this” or “DM me”\n- 3–5 hashtags\n\n---\n\n#### Pinterest Pin (100–200 chars)\n- SEO keywords (automation, website, leads)\n- Benefit-driven\n- Soft CTA\n\n---\n\n### 🔹 IMAGE GENERATION PROMPT\n\nCreate a HIGH-CONVERTING marketing visual.\n\nRequirements:\n- Style: modern, minimal, high contrast\n- Format: 1:1 or 9:16\n- Focus on business + automation theme\n- Include:\n  - A frustrated business owner OR dashboard/automation visuals\n  - Clean UI elements (charts, workflows, AI icons)\n  - Strong lighting (cinematic or studio)\n  - Bold colors (dark + neon or clean white + blue)\n- Add a short headline text idea for the image (max 6 words)\n\nGoal:\nMake people STOP scrolling.\n\n---\n\n### 🔹 REEL / SHORT VIDEO SCRIPT (CLIENT ACQUISITION)\n\nCreate a 30–60 second video designed to get leads.\n\nStructure:\n1. Hook (pain/problem)\n2. Relatable scenario\n3. Show what’s broken\n4. Introduce automation solution\n5. CTA (DM / comment / message)\n\n---\n\nInclude:\n\n- Voiceover (natural, simple)\n- On-screen text (short + bold)\n- Scene breakdown (3–5 scenes)\n- Visual direction (what viewer sees)\n\nStyle:\n- Fast-paced\n- Relatable\n- Slightly provocative\n- Focus on business pain\n\n---\n\n### 🔹 OUTPUT FORMAT (IMPORTANT)\n\nReturn ONLY valid JSON:\n\n{\n  \"LinkedIn\": \"...\",\n  \"Facebook\": \"...\",\n  \"Instagram\": \"...\",\n  \"TikTok\": \"...\",\n  \"Pinterest\": \"...\",\n  \"ImagePrompt\": \"...\",\n  \"ImageHeadline\": \"...\",\n  \"VideoScript\": {\n    \"Hook\": \"...\",\n    \"Scenes\": [\n      {\n        \"scene\": 1,\n        \"visual\": \"...\",\n        \"voiceover\": \"...\",\n        \"text\": \"...\"\n      }\n    ],\n    \"CTA\": \"...\"\n  }\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a top 1% direct-response copywriter and automation marketing expert.\n\nYou specialize in:\n- Converting social media content into leads\n- Writing hooks that stop scrolling\n- Turning problems into buying intent\n\nNever write generic content.\nAlways write like you are selling a high-value service.\n\nReturn ONLY valid JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "b10b0b04-e581-465d-a231-bf72a7b37e8d",
+      "name": "Content Creation"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "model": "gpt-image-1",
+        "prompt": "=Create a clean, modern marketing image for social media.\nHeadline concept: {{ $json.image_headline }}\nVisual guidance: {{ $json.image_prompt }}",
+        "options": {
+          "size": "1024x1024"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        0
+      ],
+      "id": "b51e23e9-559f-4e4b-b655-06efb0f4d7e4",
+      "name": "Generate image",
+      "credentials": {
+        "openAiApi": {
+          "id": "sHmBFCegyWltOeN2",
+          "name": "OpenAI: Abdur Rahman Rahat (Paid)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "6CX27PqvPX",
+        "text": "={{ $('Prepare AI Assets').item.json.linkedin_caption }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -96
+      ],
+      "id": "98c1f8f5-ce9d-4e04-a16b-92eeae39e826",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "JGxLiYP93o3x9hsy",
+          "name": "LinkedIn: Abdur Rahman Rahat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "813204035217081",
+        "edge": "photos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $('Prepare AI Assets').item.json.facebook_caption }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        48
+      ],
+      "id": "b2212e30-e804-4f8e-9bf0-5b74de6493ca",
+      "name": "Facebook Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "Biz6zU7MIiAiyyjP",
+          "name": "Facebook Graph: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        224
+      ],
+      "id": "e71ad176-e2a6-483f-b7e9-854b67c06a3a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sHmBFCegyWltOeN2",
+          "name": "OpenAI: Abdur Rahman Rahat (Paid)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "17841477105293103",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "caption",
+                "value": "={{ $('Prepare AI Assets').item.json.instagram_caption }}"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $json.secure_url }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        144
+      ],
+      "id": "20ae1c23-3162-4dc0-8190-e0963e8fd19e",
+      "name": "Instagram Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "Biz6zU7MIiAiyyjP",
+          "name": "Facebook Graph: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "17841477105293103",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        192
+      ],
+      "id": "e11d2ddd-945b-4540-9c62-91ff18cab5bd",
+      "name": "Instagram Graph API to Upload",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "Biz6zU7MIiAiyyjP",
+          "name": "Facebook Graph: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "uploadFile",
+        "additionalFieldsFile": {
+          "folder": "social-media-posts"
+        }
+      },
+      "type": "n8n-nodes-cloudinary.cloudinary",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        96
+      ],
+      "id": "b032e040-74d0-4868-9f9e-1ace2d0c29f3",
+      "name": "Upload to Cloudinary",
+      "credentials": {
+        "cloudinaryApi": {
+          "id": "LETSAZhUuomoyiJ9",
+          "name": "Cloudinary: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Prepare AI Assets').item.json.linkedin_caption }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        720
+      ],
+      "id": "bf6ef62e-338e-4ca5-961d-630dad6eeb3c",
+      "name": "Create Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "ZQhhlx5AikOG4zoN",
+          "name": "X: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1568,
+        32
+      ],
+      "id": "2d7c8608-c5df-449c-a33e-e7943f3bb8d2",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw",
+          "mode": "list",
+          "cachedResultName": "Social Media Post with Content Creation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "contents",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Content').item.json.row_number }}",
+            "is_posted?": "YES",
+            "uploaded_at": "={{$now.toISO() }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "is_posted?",
+              "displayName": "is_posted?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "uploaded_at",
+              "displayName": "uploaded_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1712,
+        48
+      ],
+      "id": "48f14140-95f2-435c-baef-188d34305286",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6fuzpxUTuqm9G0Nq",
+          "name": "Google OAuth2 API: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw",
+          "mode": "list",
+          "cachedResultName": "Social Media Post with Content Creation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "contents",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1El0eT8hrshiPa_TDP5zjeqCX5qS23gtB8nD2s0H7Qfw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "is_posted?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        528
+      ],
+      "id": "5da10845-1946-4d8b-93d6-e8c1a35eb7f9",
+      "name": "Get topic lists of un published",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6fuzpxUTuqm9G0Nq",
+          "name": "Google OAuth2 API: Astrix Forge"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 2,
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        528
+      ],
+      "id": "8fc89e81-070d-4580-bf0a-38d75a1198e3",
+      "name": "Trigger 6AM after 2 days"
+    },
+    {
+      "parameters": {
+        "jsCode": "const totalItems = $input.all().length;\n\nreturn [\n  {\n    json: {\n      total_items: totalItems\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        528
+      ],
+      "id": "95b9613d-9a56-4be0-9242-c84d68c1fc26",
+      "name": "Total Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "75f1166f-6043-4756-8bf2-808d2f647742",
+              "leftValue": "={{ $json.total_items }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        528
+      ],
+      "id": "be3ca613-1054-4fb5-8ff6-85dc36393c3c",
+      "name": "Check below 5"
+    },
+    {
+      "parameters": {
+        "chatId": "6946003508",
+        "text": "=You have only {{ $json.total_items }} items left on your content lists in google sheet. Add more to continue you auto scheduling post.\n\n- Content Creation Bot",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        432
+      ],
+      "id": "3f92264e-2c6f-4a4c-b7c3-246d6087e279",
+      "name": "Send warning",
+      "webhookId": "ea9c9d52-2681-45d1-b0b0-ba47b56198b5",
+      "credentials": {
+        "telegramApi": {
+          "id": "6AduLQCVi7gwQ8A9",
+          "name": "Telegram: Content Creation"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Content": {
+      "main": [
+        [
+          {
+            "node": "Content Creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Creation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare AI Assets": {
+      "main": [
+        [
+          {
+            "node": "Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creation": {
+      "main": [
+        [
+          {
+            "node": "Prepare AI Assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate image": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to Cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Creation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Graph API": {
+      "main": [
+        [
+          {
+            "node": "Instagram Graph API to Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "Instagram Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Instagram Graph API to Upload": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get topic lists of un published": {
+      "main": [
+        [
+          {
+            "node": "Total Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger 6AM after 2 days": {
+      "main": [
+        [
+          {
+            "node": "Get topic lists of un published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Total Items": {
+      "main": [
+        [
+          {
+            "node": "Check below 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check below 5": {
+      "main": [
+        [
+          {
+            "node": "Send warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a7108752-caba-412b-b513-d9c8bab9d449",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f00bba974abf03cb5183d4d65f8a9645a781b04770df6a7d08284fca87d50b3"
+  },
+  "id": "sNUPW7h0KedjGTSl",
+  "tags": []
+}
