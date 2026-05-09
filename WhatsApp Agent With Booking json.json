@@ -1,0 +1,1664 @@
+{
+  "name": "WhatsApp Agent With Booking",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "df472e68-de68-4849-9714-bf81bb3eaa8e",
+      "name": "Transcribir Audio",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [-2848, 800],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "IGBBcbfR3qOjF0pg",
+          "name": "OpenAI: Ayat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "Analiza el siguiente texto extraído de una imagen.\n\nTu objetivo es identificar qué tipo de documento hay en la imagen y entregar una salida clara en uno de los siguientes tres formatos:\n\n- Formato de salida 1: Factura\n\nSi el contenido corresponde a una factura, responde exactamente así: [Factura] \n\n- Formato de salida 2: Comprobante de pago\n\nSi corresponde a un comprobante de pago, responde con este formato: [Comprobante de pago]\n\n- Formato de salida 3: Otro tipo de imagen\n\nSi no es una factura ni un comprobante, describe el contenido de la imagen brevemente, con este formato: [descripción clara y concisa del contenido]\n\n## Reglas:\n\n- No inventes datos. Si algún campo no está en el texto, indícalo como \"no especificado\".\n\n- La salida debe ser en texto plano, sin etiquetas HTML ni Markdown.\n\n- Sé breve, directo y profesional.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "id": "45e1a9a7-87a9-4d95-aa92-bc9bdd78b888",
+      "name": "Transcribir Imagen",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [-2864, 992],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "IGBBcbfR3qOjF0pg",
+          "name": "OpenAI: Ayat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "def92a14-0a99-41fa-b4c6-a206ef05de26",
+      "name": "AI2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [-592, 800],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {}
+      }
+    },
+    {
+      "parameters": {
+        "updates": ["messages"],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [-3520, 800],
+      "id": "0001d7a6-08fa-485b-bfd7-f10ab01b1a68",
+      "name": "WhatsApp Trigger",
+      "webhookId": "a5084d2d-eb46-4536-a69c-6b1227440bba",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Trigger').item.json.messages[0].audio.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [-3168, 800],
+      "id": "8d303420-5905-403e-b921-689e5b0bf403",
+      "name": "Download media",
+      "webhookId": "d78a90b7-b2b5-4532-b419-8c34e482a7dd",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Trigger').item.json.messages[0].image.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [-3168, 992],
+      "id": "3fd73b24-0382-4e5e-a18f-87bcc36c4edb",
+      "name": "Download media1",
+      "webhookId": "4e489a43-0974-470f-b2e7-3b080d65c77b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3008, 800],
+      "id": "8f1dcef4-22e9-415d-a6b4-79c5b9d6b91c",
+      "name": "Download Audio",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3024, 992],
+      "id": "4819e57c-0a57-4abb-8bde-7e6d17908d03",
+      "name": "Download Image",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-2160, 704],
+      "id": "16ca9258-a3da-4070-af51-f32136cb59fb",
+      "name": "Wait4",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bfb9cf3b-4a05-490b-994f-167d75f5c032",
+              "leftValue": "={{ $json.Mensaje.last() }}",
+              "rightValue": "={{ $('Merge').item.json.message.text }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-1856, 704],
+      "id": "0066ac64-430f-465c-bdc0-7f4872b0a037",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [-1536, 848],
+      "id": "3c7fd086-e447-47b5-82e0-83667fe437a5",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "714c5d20-05cd-4c11-b9e3-c5206ad7d6c2",
+              "name": "response",
+              "value": "={{ $('Get').item.json.Mensaje.join() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-1664, 640],
+      "id": "b8a0c998-3b61-4270-8b3f-a87e1a4b649b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.message.text }}",
+        "options": {
+          "systemMessage": ""
+        }
+      },
+      "id": "d7246d1f-4937-4bdf-9bd1-d3c38b3541fb",
+      "name": "General Info Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [-544, 624],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.message.text }}",
+        "options": {
+          "systemMessage": ""
+        }
+      },
+      "id": "4bee488a-b3c9-4c75-895e-a5b5331e222f",
+      "name": "Conversational Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [-208, 960],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "24b7e8b8-6fce-4ddc-94b6-30b852891995",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Scheduling"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "956e2cc8-f269-411a-b70c-4f42f34c6706",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Information",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General Info"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0c3ff3e1-758a-4241-a89c-c46a7c0358c6",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Conversational",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Conversational"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5fb31f9c-3515-44bb-bdf2-098e1ce219a3",
+      "name": "Specific Agent",
+      "type": "n8n-nodes-base.switch",
+      "position": [-1056, 624],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0a236099-525e-4748-a57d-8b8e2c63c48b",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "text"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "24b7e8b8-6fce-4ddc-94b6-30b852891995",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "audio"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f7dd6a84-a08d-4ac2-82d7-0dab2fd65d02",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07e9100b-0109-4850-a1bc-40a7172158e8",
+      "name": "Text | Audio| Image",
+      "type": "n8n-nodes-base.switch",
+      "position": [-3360, 784],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2bb71aef-0ca1-4c26-95e1-c0c83bc82068",
+              "name": "message.text",
+              "type": "string",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "id": "1aa50292-965b-482f-ac18-98e3375fd710",
+              "name": "sessionId",
+              "value": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0594cfa8-1010-48a5-bc3e-eca65d531f67",
+      "name": "Audio Transcript",
+      "type": "n8n-nodes-base.set",
+      "position": [-2688, 800],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2bb71aef-0ca1-4c26-95e1-c0c83bc82068",
+              "name": "message.text",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "id": "70f0ba24-a37e-498b-acf2-f2552b386cf4",
+              "name": "sessionId",
+              "value": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b370eec6-de30-4b43-be1e-2dd8796956b4",
+      "name": "Image Transcript",
+      "type": "n8n-nodes-base.set",
+      "position": [-2704, 992],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "590b803f-833c-4854-bde7-5241d25b2b32",
+              "name": "message.text",
+              "type": "string",
+              "value": "={{ $json.messages[0].text.body }}"
+            },
+            {
+              "id": "d79eac54-b73d-406f-a988-fffad19a8ba8",
+              "name": "sessionId",
+              "value": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "040c6dda-d192-4cb5-ba25-b7a752a34bd0",
+      "name": "Text",
+      "type": "n8n-nodes-base.set",
+      "position": [-2688, 640],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $json.sessionId }}",
+        "messageData": "={{ $json.message.text }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [-2304, 704],
+      "id": "0da22090-615f-4162-8041-ce1024921691",
+      "name": "Push",
+      "credentials": {
+        "redis": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Mensaje",
+        "key": "={{ $('Merge').item.json.sessionId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [-2000, 704],
+      "id": "cef29755-c211-4035-9183-ca8d018feeb5",
+      "name": "Get",
+      "credentials": {
+        "redis": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Merge').item.json.sessionId }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [-1520, 640],
+      "id": "4c2c9a74-43f6-46da-808a-9cda4d8c80f5",
+      "name": "Delete",
+      "credentials": {
+        "redis": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "b9fa228d-bb6d-4f91-937d-607c3a7b6e75",
+      "name": "AI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [-1376, 800],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "IGBBcbfR3qOjF0pg",
+          "name": "OpenAI: Ayat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "349f83ef-a0df-479d-868b-c8746a6cf55a",
+      "name": "AI3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [-256, 1168],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "IGBBcbfR3qOjF0pg",
+          "name": "OpenAI: Ayat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-1264, 800],
+      "id": "ee77fc71-0069-4ef1-8c1b-53221c1cf750",
+      "name": "Memory"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-480, 800],
+      "id": "fce002b9-f0e9-40c8-8cff-bce351f17b53",
+      "name": "Memory2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-96, 1168],
+      "id": "18fff711-2b0b-4798-a56b-4176ebec344f",
+      "name": "Memory3"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [-208, 624],
+      "id": "5f94b7f9-799d-478a-a570-3535bb4ec5ad",
+      "name": "Send Message1",
+      "webhookId": "b2e28e2a-a51f-4a9f-ae75-d878ee231042",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [112, 960],
+      "id": "9ae8fc80-648b-4e4e-8e3a-fcf3b2bce970",
+      "name": "Send Message2",
+      "webhookId": "8b156c4d-b4da-4bc2-8d2c-92455e56bec6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Merge').item.json.sessionId }}",
+        "contextWindowLength": 12
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-608, 464],
+      "id": "98a24e17-f56f-4579-8ce1-f236924ac69e",
+      "name": "Simple Memory",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1257857217,
+          "mode": "list",
+          "cachedResultName": "dingdong",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [-464, 448],
+      "id": "8f2f8832-8096-4e9c-a665-e8855873dcf6",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "limit": 5,
+        "timeMin": "=",
+        "timeMax": "=",
+        "options": {
+          "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `Use the patient’s phone number as the query. Populate this field with the exact phone number string, since it is the patient ID. Do not use name, exam type, or any other details.`, 'string') }}",
+          "timeZone": {
+            "__rl": true,
+            "value": "America/Bogota",
+            "mode": "list",
+            "cachedResultName": "America/Bogota"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [-336, 448],
+      "id": "83e8fbb0-8842-44d4-8449-f4bd8daff334",
+      "name": "event listing",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Use the Google Calendar event ID as the unique identifier for each appointment. \nAlways search by the patient’s phone number first to fetch all events. \nIf multiple events are found, display them with their event IDs and details, and ask the user to choose which one to update or delete. \nOnce the user selects, use that event ID for the update or deletion. \nDo not use name, exam type, or any other details as identifiers. \nThe phone number is only the patient anchor for searching, not the appointment ID.`, 'string') }}",
+        "useDefaultReminders": false,
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', `Write a clear, structured summary of all appointment details provided by the user. Present the information in plain text lines so it is easy to read and search. Always include the phone number in the description, since it is the unique identifier. If new values are not provided, merge the existing stored values with the new ones so the description always contains the complete, updated appointment information.`, 'string') }}",
+          "end": "={{ $fromAI('End', `take from user, use iso-8601 format, don't give timezone`, 'string')+\"-05:00\" }}",
+          "start": "={{ $fromAI('Start', `take from user, use iso-8601 format, don't give timezone`, 'string')+\"-05:00\" }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [-224, 448],
+      "id": "a554ff34-6d6f-42da-876e-054c020d16af",
+      "name": "update event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Use the Google Calendar event ID as the unique identifier for each appointment. \nAlways search by the patient’s phone number first to fetch all events. \nIf multiple events are found, display them with their event IDs and details, and ask the user to choose which one to update or delete. \nOnce the user selects, use that event ID for the update or deletion. \nDo not use name, exam type, or any other details as identifiers. \nThe phone number is only the patient anchor for searching, not the appointment ID.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [-96, 448],
+      "id": "84996a9c-2a22-4440-9aae-0e7e17e45627",
+      "name": "delete an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "start": "={{ $fromAI('Start', `take from user, use iso-8601 format, don't give timezone`, 'string')+\"-05:00\" }}",
+        "end": "={{ $fromAI('End', `take from user, use iso-8601 format, don't give timezone`, 'string')+\"-05:00\" }}",
+        "useDefaultReminders": false,
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', `Write a clear, structured summary of all appointment details provided by the user. Present the information in plain text lines so it is easy to read and search. Always include the phone number in the description, since it is the unique identifier.`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `the title. it must have the phone number.`, 'string') }}"
+        },
+        "remindersUi": {
+          "remindersValues": []
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [32, 448],
+      "id": "ed815d32-3b42-467a-810d-84468b90f549",
+      "name": "create event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "timeMin": "={{ $fromAI('Start_Time', `use iso-8601 format, don't give timezone`, 'string')+\"-05:00\" }}",
+        "timeMax": "={{ $fromAI('End_Time', `use iso-8601 format,don't give timezone`, 'string')+\"-05:00\" }}",
+        "options": {
+          "timezone": {
+            "__rl": true,
+            "value": "America/Bogota",
+            "mode": "list",
+            "cachedResultName": "America/Bogota"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [144, 448],
+      "id": "63d264d0-430b-4281-80d9-d7c7b2affe73",
+      "name": "get availability",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Daily Schedule Tool:\n\nFetches all booked appointments/events for a given date. Use only when a requested time slot is unavailable, to calculate free gaps within clinic hours and suggest alternatives. Not for searching individual user appointments.\n\n",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "zksumon2017@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zksumon2017@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $fromAI('After', `beginning of the asking date, don't give timezone`, 'string')+\"-05:00\" }}",
+        "timeMax": "={{ $fromAI('Before', `ending of the asking date, don't give timezone`, 'string')+\"-05:00\" }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "America/Bogota",
+            "mode": "list",
+            "cachedResultName": "America/Bogota"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [288, 448],
+      "id": "098ec9b7-8653-44c7-9b7e-15ed81aebe68",
+      "name": "get daily schedule",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kIvsmWr21T0ulT5G",
+          "name": "Google Calendar: Rahat Hossain"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $('Booking Agent').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [272, 192],
+      "id": "55ace47c-1f3b-40f3-bcab-50de025285a4",
+      "name": "Send final message",
+      "webhookId": "8a6b1834-324b-4c86-8147-8239753f948d",
+      "credentials": {
+        "whatsAppApi": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=current date time (yyyy-MM-dd) :: {{ $now.format('yyyy-MM-dd') }}\n\nuser phone :: {{ $('Merge').item.json.sessionId }}\n\nuser message :: {{ $('Merge').item.json.message.text }}",
+        "options": {
+          "systemMessage": "You are an AI appointment booking assistant for Global Medicine. \nLanguage Rule:  use English.\n\nCRITICAL STARTING RULE: THE INITIAL GREETING\nIf the user starts the conversation with a greeting (like \"hi\", \"hello\", etc.) or does not specify what they want, DO NOT start booking an appointment. You MUST ONLY greet them warmly and present the Main Menu. Wait for them to reply with what they want to do.\n\nMAIN MENU OPTIONS:\n1. Book a new appointment\n2. View my current appointments\n3. Modify an appointment\n4. Cancel an appointment\n5. Center information / Frequently Asked Questions\n\nESCAPE / STOP WORD\nIf the user says \"stop\", \"detener\", \"salir\", \"volver\", or indicates they want to cancel the current action at any time, immediately stop the current process, discard unconfirmed temporary data, and return to the friendly Initial Greeting / Main Menu.\n\nSTEP-BY-STEP COLLECTION (FOR BOOKING & UPDATING)\nYou must ask for missing details strictly ONE at a time.\nThe order is: Patient Name -> Exam Type -> Preferred Date -> Preferred Time.\nAsk for the next missing piece naturally at the very end of your message (e.g., \"¿Me podrías indicar tu nombre completo?\").\nIf the user provides multiple details in one message (e.g., \"Soy Carlos, quiero cita para mañana\"), gracefully capture everything they gave you, and simply ask for the next missing detail (e.g., \"¿Qué tipo de examen necesitas?\").\n\nDATA TRACKING & DISPLAY FORMAT (VERY IMPORTANT)\nWhenever you are in a booking or updating flow, you must show the user a summary of the data collected SO FAR.\nRULE: ONLY show fields that have been successfully collected. DO NOT show empty fields, and DO NOT write \"blank\".\n\nDisplay the collected data in this strict format (omitting lines you don't have yet):\nPatient Name: [Name]\nID Number: [Phone Number]\nExam Type: [Exam]\nPreferred Date: [Date]\nPreferred Time: [Time]\n\nAfter showing this summary, politely ask the user for the EXACT NEXT single piece of missing information.\nImportant: When it is time to ask for the Exam Type, you MUST provide this link in your question so they can choose: https://n8n.srv1364914.hstgr.cloud/webhook/select-exam\n\nSTRICT FUNCTIONALITY RULES\n\nLive Data Only: NEVER rely on chat history for Google Calendar or Google Sheet data. Always use your tools to fetch the freshest data. Use chat history ONLY for conversational context.\n\nPhone Number is Key: The user's phone number is auto-captured. NEVER ask for it. Use it as the sole query to search for and list appointments.\n\nAvailability First & Smart Suggestions: You MUST run the Availability Tool to check open slots BEFORE proposing, creating, or updating an appointment time.\n- If the requested day/slot is unavailable, you MUST call the dedicated Daily Schedule Tool (do NOT use the regular phone-number Listing Tool) to fetch all booked events for that specific date.\n- Analyze the booked events against the clinic's operating hours to find empty slots.\n- Suggest these available empty slots to the user.\n- If the entire day is fully booked (a whole-day failure), politely inform the user and ask them to choose another day.\n\nList Before Action: To Update or Cancel, you MUST run the Get Many/Listing Tool first (querying the phone number) to fetch existing events and extract the unique Event ID.\n\nStrict Confirmation: NEVER assume or guess. Always ask the user for explicit confirmation before calling the Create, Update, or Delete tools.\n\nCompany Info = Google Sheet Only: For ANY questions about company FAQs, opening/closing hours, available tests, contact info, or location, you MUST ALWAYS call the Google Sheet tool to fetch the answer. NEVER invent or guess company details.\n\nCONVERSATION FLOWS\n\n1. CREATE APPOINTMENT MODE\n- Collect missing details step-by-step, ONE at a time.\n- Only show data collected so far.\n- When asking for Exam Type, give the link: https://n8n.srv1364914.hstgr.cloud/webhook/select-exam\n- Run the Availability Tool for the requested time.\n- Fallback: If unavailable, run the Daily Schedule Tool for that date, find empty slots, and suggest them. If the day is full, ask for a new date.\n- Once all details are collected, ask for user confirmation.\n- On confirm, call Create Tool:\n  - Title strictly formatted as: \"[Exam Type] – [Patient Name] – [Phone Number]\"\n  - Description strictly formatted line-by-line.\n\n2. LIST APPOINTMENTS MODE\n- Run Get Many/Listing Tool using the phone number.\n- Display the found events politely to the user. Ask if they need anything else (Main Menu options).\n\n3. UPDATE APPOINTMENT MODE\n- Step 1: Run Get Many/Listing Tool using the phone number.\n- Step 2: Display the found event(s) to the user and ask which one to change.\n- Step 3: Collect new values step-by-step (only showing what has been collected).\n- Step 4: Run Availability Tool for the new time. \n  - If changing the Exam Type, give the link: https://n8n.srv1364914.hstgr.cloud/webhook/select-exam\n  - Fallback: If unavailable, run Daily Schedule Tool for that date, find empty slots, suggest them.\n- Step 5: Merge old and new values. (Retain old values if no new input is provided).\n- Step 6: Ask for user confirmation.\n- Step 7: On confirm, call Update Tool using the exact Event ID.\n\n4. CANCEL APPOINTMENT MODE\n- Step 1: Run Get Many/Listing Tool using the phone number.\n- Step 2: Show the found event(s) and ask which one to cancel.\n- Step 3: Ask for user confirmation.\n- Step 4: On confirm, call Delete Tool using the exact Event ID.\n\n5. FAQ & INFORMATION MODE\n- Triggered when the user asks about company details, opening/closing times, available tests, prices, location, or contact info.\n- Step 1: Call the Google Sheet tool immediately to fetch the required information.\n- Step 2: Answer the user concisely in their native language based ONLY on the data returned from the tool.\n- Step 3: Do not hallucinate or provide information not found in the sheet.\n\nBEHAVIOR\nBe friendly, concise, direct, and polite.\nNever invent Event IDs, availability, patient data, or company FAQs."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [-416, 96],
+      "id": "e6e334e8-010c-406b-aea6-913a123b8e80",
+      "name": "Booking Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-720, 480],
+      "id": "fc493a6f-53d7-492c-bdae-7ef8ab74b9a8",
+      "name": "AI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "IGBBcbfR3qOjF0pg",
+          "name": "OpenAI: Ayat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse & extract structured data from Booking Agent output\nconst agentOutput = $input.first().json.output ?? $input.first().json.text ?? '';\n\n// ─── Helpers ───────────────────────────────────────────────────────────────\nfunction extract(pattern, text, group = 1) {\n  const m = text.match(pattern);\n  return m ? m[group].trim() : null;\n}\n\n// ─── Extract fields ─────────────────────────────────────────────────────────\nconst dateMatch   = extract(/\\b(\\d{1,2}[\\/\\-]\\d{1,2}[\\/\\-]\\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?\\s+\\d{1,2},?\\s*\\d{4}|\\d{4}-\\d{2}-\\d{2})/i, agentOutput);\nconst timeMatch   = extract(/\\b(\\d{1,2}:\\d{2}(?::\\d{2})?\\s*(?:AM|PM|am|pm)?)/i, agentOutput);\nconst serviceMatch= extract(/(?:service|appointment|event|booking)[:\\s]+([^,\\.\\n]+)/i, agentOutput);\nconst statusMatch = extract(/(confirmed|scheduled|booked|cancelled|rescheduled|pending)/i, agentOutput, 0);\nconst nameMatch   = extract(/(?:for|client|patient|name)[:\\s]+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)/i, agentOutput);\nconst idMatch     = extract(/(?:ID|id|#|confirmation)[:\\s#]+(\\w{4,})/i, agentOutput);\n\n// ─── Build structured result ─────────────────────────────────────────────────\nconst parsed = {\n  raw:          agentOutput,\n  status:       statusMatch ?? 'unknown',\n  date:         dateMatch   ?? null,\n  time:         timeMatch   ?? null,\n  service:      serviceMatch?? null,\n  clientName:   nameMatch   ?? null,\n  confirmationId: idMatch   ?? null,\n  parsedAt:     new Date().toISOString(),\n};\n\n// ─── Build a clean summary for the WhatsApp reply ────────────────────────────\nconst lines = [];\nif (parsed.status !== 'unknown') lines.push(`Status: ${parsed.status.toUpperCase()}`);\nif (parsed.service)              lines.push(`Service: ${parsed.service}`);\nif (parsed.date)                 lines.push(`Date: ${parsed.date}`);\nif (parsed.time)                 lines.push(`Time: ${parsed.time}`);\nif (parsed.clientName)           lines.push(`Client: ${parsed.clientName}`);\nif (parsed.confirmationId)       lines.push(`Ref: ${parsed.confirmationId}`);\n\nparsed.summary = lines.length > 0\n  ? lines.join('\\n')\n  : agentOutput; // fallback to raw if nothing parsed\n\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 160],
+      "id": "5ae620ad-2da0-4e72-a484-13f74a19944a",
+      "name": "Parse Booking Output"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1257857217,
+          "mode": "list",
+          "cachedResultName": "dingdong",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [-352, 800],
+      "id": "33cd3bfe-f0c7-4fa6-9e7f-ae4a174ac507",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1II97QaRDRIYTKwgQYM7mm9cHumZODNYFWRRdQ805eNA",
+          "mode": "list",
+          "cachedResultName": "Hotel Management",
+          "cachedResultUrl": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Room Type",
+              "displayName": "Room Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Departure Date",
+              "displayName": "Departure Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pickup",
+              "displayName": "Pickup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Request",
+              "displayName": "Request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Selected Hotel",
+              "displayName": "Selected Hotel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [224, 0],
+      "id": "b4ae3fe4-65b4-4edb-837b-b0de21b1cca2",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": " ",
+          "name": " "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [-2464, 688],
+      "id": "98792fef-ac60-4980-af46-5c7dc93d9998",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.response }}",
+        "options": {
+          "systemMessage": ""
+        }
+      },
+      "id": "d9a64179-9e2d-476e-9bbf-5565d194c810",
+      "name": "Route Group Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [-1360, 640],
+      "typeVersion": 1.9
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Transcribir Audio": {
+      "main": [
+        [
+          {
+            "node": "Audio Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir Imagen": {
+      "main": [
+        [
+          {
+            "node": "Image Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "General Info Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text | Audio| Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download media": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download media1": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribir Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Transcribir Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Info Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversational Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Specific Agent": {
+      "main": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "General Info Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Conversational Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text | Audio| Image": {
+      "main": [
+        [
+          {
+            "node": "Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download media1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Transcript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Image Transcript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Text": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "main": [
+        [
+          {
+            "node": "Route Group Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Route Group Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Conversational Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Route Group Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "General Info Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "Conversational Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event listing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete an event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get availability": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get daily schedule": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Booking Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Booking Output",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Booking Output": {
+      "main": [
+        [
+          {
+            "node": "Send final message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Info Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Group Agent": {
+      "main": [
+        [
+          {
+            "node": "Specific Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3867f4b8-111a-40cb-92d0-9d1a4e37aad9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc9e9d9b5ac2c2649067ce8b8e3dacc327e85ee95b1358b61270823ac820c66d"
+  },
+  "id": "rtaVQhMZ0j1dSYJR",
+  "tags": []
+}
